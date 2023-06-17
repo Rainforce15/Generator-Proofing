@@ -12,7 +12,6 @@ import com.intellij.openapi.vcs.ex.createRanges
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.util.containers.ContainerUtil
-import java.util.Collections.unmodifiableList
 
 fun getRanges(docText: CharSequence, contentFromVcs: CharSequence): List<Range> {
 	return createRanges(docText, StringUtilRt.convertLineSeparators(contentFromVcs, "\n"))
@@ -39,13 +38,10 @@ fun getChangedTextRanges(document: Document, changedRanges: List<Range>): List<T
 
 	for (range in changedRanges) {
 		if (range.hasLines()) {
-			val changeStartLine = range.line1
-			val changeEndLine = range.line2
-
-			val lineStartOffset = document.getLineStartOffset(changeStartLine)
-			val lineEndOffset = document.getLineEndOffset(changeEndLine - 1)
-
-			ranges.add(TextRange(lineStartOffset, lineEndOffset))
+			ranges.add(TextRange(
+				document.getLineStartOffset(range.line1),
+				document.getLineEndOffset(range.line2 - 1))
+			)
 		} else if (range.hasVcsLines()) {
 			val lineEndOffset = document.getLineStartOffset(range.vcsLine1) - 1 // in case of deleted lines, pick correct adjacent element
 			ranges.add(TextRange(lineEndOffset, lineEndOffset))
@@ -86,7 +82,7 @@ fun getOutsideRanges(text: String, startPattern: String, endPattern: String): Li
 		prevLineEnd = text.lastIndexOf("\n", prevSearchEnd) + 1 // skip the end pattern indentation
 	}
 
-	return unmodifiableList(ranges)
+	return ranges
 }
 
 fun getRelevantRanges(outsideUserSection: List<TextRange>, changes: List<TextRange>): List<TextRange> {
@@ -104,9 +100,10 @@ fun getRelevantRanges(outsideUserSection: List<TextRange>, changes: List<TextRan
 		} else if (changeRange.endOffset <= outsideRange.startOffset) {
 			changeIdx++
 		} else {
-			val start = outsideRange.startOffset.coerceAtLeast(changeRange.startOffset)
-			val end = outsideRange.endOffset.coerceAtMost(changeRange.endOffset)
-			relevantRanges.add(TextRange(start, end))
+			relevantRanges.add(TextRange(
+				outsideRange.startOffset.coerceAtLeast(changeRange.startOffset),
+				outsideRange.endOffset.coerceAtMost(changeRange.endOffset)
+			))
 			if (outsideRange.endOffset < changeRange.endOffset) {
 				outsideIdx++
 			} else {
@@ -115,7 +112,7 @@ fun getRelevantRanges(outsideUserSection: List<TextRange>, changes: List<TextRan
 		}
 	}
 
-	return unmodifiableList(relevantRanges)
+	return relevantRanges
 }
 
 fun getAffectedRanges(file: PsiFile, startPattern: String, endPattern: String): List<TextRange> {
@@ -126,13 +123,12 @@ fun getAffectedRanges(file: PsiFile, startPattern: String, endPattern: String): 
 
 	return if (document != null) {
 		val docText = document.charsSequence.toString()
-
-		val outsideUserSection = getOutsideRanges(docText, startPattern, endPattern)
-
 		val changedLines = if (contentFromVcs != null) getRanges(docText, contentFromVcs) else emptyList()
-		val changed = getChangedTextRanges(changedLines, change, file, document, contentFromVcs)
 
-		getRelevantRanges(outsideUserSection, changed)
+		getRelevantRanges(
+			getOutsideRanges(docText, startPattern, endPattern),
+			getChangedTextRanges(changedLines, change, file, document, contentFromVcs)
+		)
 	} else {
 		emptyList()
 	}

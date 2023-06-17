@@ -17,15 +17,15 @@ class GeneratorPatternVisitor(private val holder: ProblemsHolder): JavaElementVi
 		if (file.firstChild.text.contains(_patternAffectedfile)) {
 			for (changedRange in getAffectedRanges(file, _patternStart, _patternEnd)) {
 				holder.registerProblem(ProblemDescriptorBase(
-						file,
-						file,
-						_errorText,
-						null,
-						ProblemHighlightType.ERROR,
-						false,
-						changedRange,
-						true,
-						false
+					file,
+					file,
+					_errorText,
+					null,
+					ProblemHighlightType.ERROR,
+					false,
+					changedRange,
+					true,
+					false
 				))
 			}
 		}
