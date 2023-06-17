@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.aeolid"
-version = "1.2"
+version = "1.3b"
 
 repositories {
     mavenCentral()
@@ -14,7 +14,7 @@ repositories {
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
-    version.set("2022.2.5")
+    version.set("2023.1")
     type.set("IC") // Target IDE Platform
 
     plugins.set(listOf("com.intellij.java"))
@@ -32,8 +32,8 @@ tasks {
 
     patchPluginXml {
         version.set("${project.version}")
-        sinceBuild.set("222")
-        untilBuild.set("232.*")
+        sinceBuild.set("231")
+        untilBuild.set("242.*")
     }
 
     signPlugin {
