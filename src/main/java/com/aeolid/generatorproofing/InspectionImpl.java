@@ -18,7 +18,7 @@ public class InspectionImpl extends AbstractBaseJavaLocalInspectionTool {
 	private static final String PATTERNSTART = "// USER SECTION BEGIN";
 	private static final String PATTERNEND = "// USER SECTION END";
 
-	private static final String ERRORTEXT = InspectionBundle.message("inspection.generatedCodePattern.display.name");
+	private static final String ERRORTEXT = InspectionBundle.INSTANCE.getMessage("inspection.generatedCodePattern.display.name");
 
 	@Override
 	public boolean runForWholeFile() {
