@@ -11,7 +11,6 @@ import com.intellij.openapi.vcs.ex.Range
 import com.intellij.openapi.vcs.ex.createRanges
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
-import com.intellij.util.containers.ContainerUtil
 
 fun getRanges(docText: CharSequence, contentFromVcs: CharSequence): List<Range> {
 	return createRanges(docText, StringUtilRt.convertLineSeparators(contentFromVcs, "\n"))
@@ -25,7 +24,7 @@ fun getChangedTextRanges(
 	contentFromVcs: String?
 ): List<TextRange> {
 	return if (change != null && change.type == Change.Type.NEW) {
-		ContainerUtil.newArrayList(file.textRange)
+		listOf(file.textRange)
 	} else if (contentFromVcs != null) {
 		getChangedTextRanges(document, gotRanges)
 	} else {
