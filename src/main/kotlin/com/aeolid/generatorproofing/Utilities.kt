@@ -42,7 +42,7 @@ fun getChangedTextRanges(document: Document, changedRanges: List<Range>): List<T
 				document.getLineEndOffset(range.line2 - 1))
 			)
 		} else if (range.hasVcsLines()) {
-			val lineEndOffset = document.getLineStartOffset(range.vcsLine1)
+			val lineEndOffset = document.getLineStartOffset(range.line1)
 			ranges.add(TextRange(lineEndOffset, lineEndOffset))
 		}
 	}
