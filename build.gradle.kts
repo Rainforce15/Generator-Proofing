@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.aeolid"
-version = "1.3.1"
+version = "1.3.2"
 
 repositories {
 	mavenCentral()
@@ -33,7 +33,7 @@ tasks {
 	patchPluginXml {
 		version.set("${project.version}")
 		sinceBuild.set("231")
-		untilBuild.set("242.*")
+		untilBuild.set("243.*")
 	}
 
 	signPlugin {
