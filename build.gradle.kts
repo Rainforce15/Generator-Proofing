@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.aeolid"
-version = "1.3.1"
+version = "1.2.1"
 
 repositories {
 	mavenCentral()
@@ -14,7 +14,7 @@ repositories {
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
-	version.set("2023.1")
+	version.set("2022.1")
 	type.set("IC") // Target IDE Platform
 
 	plugins.set(listOf("com.intellij.java"))
@@ -23,17 +23,17 @@ intellij {
 tasks {
 	// Set the JVM compatibility versions
 	withType<JavaCompile> {
-		sourceCompatibility = "17"
-		targetCompatibility = "17"
+		sourceCompatibility = "11"
+		targetCompatibility = "11"
 	}
 	withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-		kotlinOptions.jvmTarget = "17"
+		kotlinOptions.jvmTarget = "11"
 	}
 
 	patchPluginXml {
 		version.set("${project.version}")
-		sinceBuild.set("231")
-		untilBuild.set("242.*")
+		sinceBuild.set("221")
+		untilBuild.set("223.*")
 	}
 
 	signPlugin {
