@@ -1,19 +1,19 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
-    <id>com.aeolid.GeneratorProofing</id>
+	<!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+	<id>com.aeolid.GeneratorProofing</id>
 
-    <!-- Public plugin name should be written in Title Case.
-         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-    <name>Generator Proofing</name>
+	<!-- Public plugin name should be written in Title Case.
+		 Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+	<name>Generator Proofing</name>
 
-    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor url="https://aeolid.com">Aeolid Software</vendor>
+	<!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+	<vendor url="https://aeolid.com">Aeolid Software</vendor>
 
-    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
-         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
-         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
-    <description><![CDATA[
+	<!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+		 Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+		 Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+	<description><![CDATA[
 A plugin helping with the early detection of accidental changes to generated code in a project.<br>
 The plugin currently supports the following pattern:<br>
 <br>
@@ -30,23 +30,30 @@ public int add(int a, int b) {
 </pre><br>
 The comment marking the file as generated, as well as the opening and closing comments indicating an implementation block can be defined in the inspection settings.
 ]]></description>
+	<change-notes><![CDATA[
+<h3>New Features</h3>
+<ul>
+    <li>Explanatory text for available fields</li>
+</ul>
+]]></change-notes>
+	<!-- Product and plugin compatibility requirements.
+		 Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+	<depends>com.intellij.modules.platform</depends>
+	<depends>com.intellij.java</depends>
 
-    <!-- Product and plugin compatibility requirements.
-         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
-    <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.java</depends>
-
-    <!-- Extension points defined by the plugin.
-         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
-    <extensions defaultExtensionNs="com.intellij">
-        <localInspection language="JAVA"
-                         bundle="messages.InspectionBundle"
-                         key="inspection.generatedCodePattern.display.name"
-                         groupPath="Java"
-                         groupBundle="messages.InspectionsBundle"
-                         groupKey="group.names.probable.bugs"
-                         enabledByDefault="true"
-                         level="ERROR"
-                         implementationClass="com.aeolid.generatorproofing.InspectionImpl"/>
-    </extensions>
+	<!-- Extension points defined by the plugin.
+		 Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+	<extensions defaultExtensionNs="com.intellij">
+		<localInspection
+			language="JAVA"
+			bundle="messages.InspectionBundle"
+			key="inspection.generatedCodePattern.display.name"
+			groupPath="Java"
+			groupBundle="messages.InspectionsBundle"
+			groupKey="group.names.probable.bugs"
+			enabledByDefault="true"
+			level="ERROR"
+			implementationClass="com.aeolid.generatorproofing.InspectionImpl"
+		/>
+	</extensions>
 </idea-plugin>
