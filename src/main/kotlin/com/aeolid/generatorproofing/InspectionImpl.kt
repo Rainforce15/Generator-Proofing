@@ -25,7 +25,7 @@ class InspectionImpl: AbstractBaseJavaLocalInspectionTool() {
 	}
 
 	private fun getOptString(@Language("jvm-field-name") bindId: String, labelId: String, infoTextId: String): OptString {
-		return OptString(bindId, PlainMessage(getMessage(labelId)), null, -1, HtmlChunk.text(getMessage(infoTextId)))
+		return OptString(bindId, PlainMessage(getMessage(labelId)), null, -1, HtmlChunk.raw(getMessage(infoTextId)))
 	}
 
 	override fun getOptionsPane(): OptPane {

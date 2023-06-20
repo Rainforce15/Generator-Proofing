@@ -33,7 +33,7 @@ The comment marking the file as generated, as well as the opening and closing co
 	<change-notes><![CDATA[
 <h3>New Features</h3>
 <ul>
-    <li>Explanatory text for available fields</li>
+	<li>Explanatory text for available fields</li>
 </ul>
 ]]></change-notes>
 	<!-- Product and plugin compatibility requirements.
