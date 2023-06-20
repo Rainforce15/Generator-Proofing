@@ -30,7 +30,12 @@ public int add(int a, int b) {
 </pre><br>
 The comment marking the file as generated, as well as the opening and closing comments indicating an implementation block can be defined in the inspection settings.
 ]]></description>
-
+	<change-notes><![CDATA[
+<h3>New Features</h3>
+<ul>
+	<li>Explanatory text for available fields</li>
+</ul>
+]]></change-notes>
 	<!-- Product and plugin compatibility requirements.
 		 Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
 	<depends>com.intellij.modules.platform</depends>

@@ -6,10 +6,12 @@ import java.text.ParseException
 import javax.swing.JTextField
 import javax.swing.event.DocumentEvent
 
-class SingleTextField(private val owner: InspectionProfileEntry, private val property: String): JTextField() {
+class SingleTextField(private val owner: InspectionProfileEntry, private val property: String, hint: String): JTextField() {
+
 	init {
 		text = getPropertyValue()
 		val instance = this
+		toolTipText = hint
 		document.addDocumentListener(object : DocumentAdapter() {
 			public override fun textChanged(e: DocumentEvent) {
 				try {
