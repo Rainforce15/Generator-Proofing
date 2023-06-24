@@ -21,7 +21,7 @@ class InspectionImpl : AbstractBaseJavaLocalInspectionTool() {
 	override fun runForWholeFile() = true
 
 	override fun createOptionsPanel(): JComponent {
-		val panel = InspectionOptionsPanel(this)
+		val panel = InspectionOptionsPanel()
 
 		panel.add(JLabel(getMessage("inspection.generatedCodePattern.headerPattern")), "cell 0 0")
 		panel.add(SingleTextField(this, "headerPattern", getMessage("inspection.generatedCodePattern.headerPatternInfo")), "cell 1 0, growx, pushx")
