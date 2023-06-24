@@ -53,18 +53,24 @@ class InspectionImpl : AbstractBaseJavaLocalInspectionTool() {
 
 				val affectedRanges = getAffectedRanges(file, beginPattern, endPattern)
 
-				for (changedRange in affectedRanges) {
-					holder.registerProblem(ProblemDescriptorBase(
-						file,
-						file,
-						_errorText,
-						arrayOf(ignoreTempFix),
-						ERROR,
-						false,
-						changedRange,
-						true,
-						false
-					))
+				if (affectedRanges.isEmpty()) {
+					ignoredFiles.remove(file.virtualFile.path)
+				}
+
+				if(!ignoredFiles.contains(file.virtualFile.path)) {
+					for (changedRange in affectedRanges) {
+						holder.registerProblem(ProblemDescriptorBase(
+							file,
+							file,
+							_errorText,
+							arrayOf(ignoreTempFix),
+							ERROR,
+							false,
+							changedRange,
+							true,
+							false
+						))
+					}
 				}
 			}
 			super.visitJavaFile(file)
