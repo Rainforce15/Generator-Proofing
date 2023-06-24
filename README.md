@@ -35,6 +35,15 @@ Header pattern: `// Generated file`
 Begin pattern: `// IMPLEMENTATION BEGIN`  
 End pattern: `// IMPLEMENTATION END`
 
+Substrings are acceptable e.g. header pattern ` * Generated File` will still match inside a multiline comment:
+
+```java
+/*
+ * Generated File
+ * created on 2023-02-01
+ */
+```
+
 ### Additional features
 
 The plugin can be told to ignore the currently marked file by using the Quick Fix feature (either by pressing `Alt+Enter` or clicking the light bulb icon) and selecting `Ignore file until restart/changes have been rolled back...`.
