@@ -1,4 +1,4 @@
-# Generator Proofing
+# <img src="./src/main/resources/META-INF/pluginIcon.svg" alt="logo"> Generator Proofing
 
 
 [![Version](https://img.shields.io/jetbrains/plugin/v/22079-generator-proofing)](https://plugins.jetbrains.com/plugin/22079-generator-proofing)
