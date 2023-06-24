@@ -1,47 +1,36 @@
 package com.aeolid.generatorproofing
 
 import com.aeolid.generatorproofing.InspectionBundle.getMessage
-import com.intellij.codeInspection.AbstractBaseJavaLocalInspectionTool
-import com.intellij.codeInspection.ProblemDescriptorBase
+import com.intellij.codeInspection.*
 import com.intellij.codeInspection.ProblemHighlightType.ERROR
-import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.codeInspection.options.OptPane
 import com.intellij.codeInspection.options.OptString
 import com.intellij.codeInspection.options.PlainMessage
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.HtmlChunk
-import com.intellij.psi.JavaElementVisitor
-import com.intellij.psi.PsiComment
-import com.intellij.psi.PsiElementVisitor
-import com.intellij.psi.PsiJavaFile
+import com.intellij.psi.*
 import org.intellij.lang.annotations.Language
 
 class InspectionImpl: AbstractBaseJavaLocalInspectionTool() {
-	var headerPattern: String = ""
-	var beginPattern: String = ""
-	var endPattern: String = ""
+	var headerPattern = ""
+	var beginPattern = ""
+	var endPattern = ""
 
-	override fun runForWholeFile(): Boolean {
-		return true
-	}
+	val ignoredFiles = HashSet<String>()
 
-	private fun getOptString(@Language("jvm-field-name") bindId: String, labelId: String, infoTextId: String): OptString {
-		return OptString(bindId, PlainMessage(getMessage(labelId)), null, -1, HtmlChunk.raw(getMessage(infoTextId)))
-	}
+	override fun runForWholeFile() = true
 
-	override fun getOptionsPane(): OptPane {
-		return OptPane.pane(
-			getOptString("headerPattern", "inspection.generatedCodePattern.display.headerPattern", "inspection.generatedCodePattern.display.headerPatternInfo"),
-			getOptString("beginPattern", "inspection.generatedCodePattern.display.beginPattern", "inspection.generatedCodePattern.display.beginPatternInfo"),
-			getOptString("endPattern", "inspection.generatedCodePattern.display.endPattern", "inspection.generatedCodePattern.display.endPatternInfo")
-		)
-	}
+	private fun getOptString(@Language("jvm-field-name") bindId: String, labelId: String, infoTextId: String) =
+		OptString(bindId, PlainMessage(getMessage(labelId)), null, -1, HtmlChunk.raw(getMessage(infoTextId)))
 
-	override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-		return GeneratorPatternVisitor(holder)
-	}
+	override fun getOptionsPane() = OptPane.pane(
+		getOptString("headerPattern", "inspection.generatedCodePattern.headerPattern", "inspection.generatedCodePattern.headerPatternInfo"),
+		getOptString("beginPattern", "inspection.generatedCodePattern.beginPattern", "inspection.generatedCodePattern.beginPatternInfo"),
+		getOptString("endPattern", "inspection.generatedCodePattern.endPattern", "inspection.generatedCodePattern.endPatternInfo")
+	)
 
-	inner class GeneratorPatternVisitor(private val holder: ProblemsHolder): JavaElementVisitor() {
-		private val _errorText = getMessage("inspection.generatedCodePattern.display.name")
+	override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean) = object: JavaElementVisitor() {
+		private val _errorText = getMessage("inspection.generatedCodePattern.name")
 
 		override fun visitJavaFile(file: PsiJavaFile) {
 			val firstChild = file.firstChild
@@ -52,20 +41,31 @@ class InspectionImpl: AbstractBaseJavaLocalInspectionTool() {
 				firstChild is PsiComment &&
 				firstChild.text.contains(headerPattern)
 			) {
-				for (changedRange in getAffectedRanges(file, beginPattern, endPattern)) {
-					holder.registerProblem(
-							ProblemDescriptorBase(
+				val ignoreTempFix = object: LocalQuickFix {
+					override fun getFamilyName() = getMessage("inspection.generatedCodePattern.IgnoreFileForNow")
+					override fun applyFix(p: Project, d: ProblemDescriptor) { ignoredFiles.add(file.virtualFile.path) }
+				}
+
+				val affectedRanges = getAffectedRanges(file, beginPattern, endPattern)
+
+				if (affectedRanges.isEmpty()) {
+					ignoredFiles.remove(file.virtualFile.path)
+				}
+
+				if(!ignoredFiles.contains(file.virtualFile.path)) {
+					for (changedRange in affectedRanges) {
+						holder.registerProblem(ProblemDescriptorBase(
 							file,
 							file,
 							_errorText,
-							null,
+							arrayOf(ignoreTempFix),
 							ERROR,
 							false,
 							changedRange,
 							true,
 							false
-						)
-					)
+						))
+					}
 				}
 			}
 			super.visitJavaFile(file)
