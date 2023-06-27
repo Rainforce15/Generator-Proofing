@@ -14,24 +14,48 @@
 		 Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
 		 Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
 	<description><![CDATA[
-A plugin helping with the early detection of accidental changes to generated code in a project.<br>
-The plugin currently supports the following pattern:<br>
-<br>
+A simple Java Plugin preventing you from committing code in partially generated files.
+
+<h2>Usage</h2>
+<h3>Basic configuration</h3>
+The plugin is intended for generated code that is marked with a header comment and contains implementation begin and end tags:
 <pre>
 // Generated file
 
-public int add(int a, int b) {
-    var result = 0;
-    // IMPLEMENTATION BEGIN
-    result = a + b;
-    // IMPLEMENTATION END
-    return result;
+public class MyClass {
+    public int add(int a, int b) {
+        var result = 0;
+        // IMPLEMENTATION BEGIN
+        result = a + b; // only content between the tags can be edited
+        // IMPLEMENTATION END
+        return result; // changing this line would cause an error
+    }
 }
-</pre><br>
-The comment marking the file as generated, as well as the opening and closing comments indicating an implementation block can be defined in the inspection settings.
+</pre>
+The specific trigger strings have to be configured in the inspection settings under <b>Settings... | Editor | Inspections | Java | Probable bugs | Change in generated code</b>. E.g. for above file to work the fields would be configured as:<br>
+<br>
+Header pattern: &nbsp;&nbsp;<b><code>// Generated file</code></b><br>
+Begin pattern: &nbsp;&nbsp;<b><code>// IMPLEMENTATION BEGIN</code></b><br>
+End pattern: &nbsp;&nbsp;<b><code>// IMPLEMENTATION END</code></b><br>
+<br>
+Substrings are acceptable e.g. header pattern &nbsp;&nbsp;<b><code>* Generated File</code></b>&nbsp;&nbsp; will still match inside a multiline comment:
+<pre>
+/*
+ * Generated File
+ * created on 2023-02-01
+ */
+</pre>
+
+<h3>Additional features</h3>
+The plugin can be told to ignore the currently marked file by using the Quick Fix feature (either by pressing <b>Alt+Enter</b> or clicking the light bulb icon) and selecting <b>Ignore file until restart/changes have been rolled back...</b>. This will stop the inspection from marking any current changes to the file as errors until the IDE is restarted or all changes have been reverted.
 ]]></description>
 	<change-notes><![CDATA[
 <h3>New Features</h3>
+<h2>1.2.4</h2>
+<ul>
+	<li>improved explanation in plugin description</li>
+</ul>
+<h2>1.2.3</h2>
 <ul>
 	<li>Explanatory text for available fields</li>
 	<li>Code Warnings can now be temporarily suppressed for a given file</li>

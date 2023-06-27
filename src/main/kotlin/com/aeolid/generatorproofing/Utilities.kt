@@ -12,9 +12,8 @@ import com.intellij.openapi.vcs.ex.createRanges
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 
-fun getRanges(docText: CharSequence, contentFromVcs: CharSequence): List<Range> {
-	return createRanges(docText, StringUtilRt.convertLineSeparators(contentFromVcs, "\n"))
-}
+fun getRanges(docText: CharSequence, contentFromVcs: CharSequence) =
+	createRanges(docText, StringUtilRt.convertLineSeparators(contentFromVcs, "\n"))
 
 fun getChangedTextRanges(
 	gotRanges: List<Range>,
