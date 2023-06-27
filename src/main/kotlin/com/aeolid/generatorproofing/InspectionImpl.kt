@@ -30,8 +30,6 @@ class InspectionImpl: AbstractBaseJavaLocalInspectionTool() {
 	)
 
 	override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean) = object: JavaElementVisitor() {
-		private val _errorText = getMessage("inspection.generatedCodePattern.name")
-
 		override fun visitJavaFile(file: PsiJavaFile) {
 			val firstChild = file.firstChild
 			if (
@@ -41,11 +39,6 @@ class InspectionImpl: AbstractBaseJavaLocalInspectionTool() {
 				firstChild is PsiComment &&
 				firstChild.text.contains(headerPattern)
 			) {
-				val ignoreTempFix = object: LocalQuickFix {
-					override fun getFamilyName() = getMessage("inspection.generatedCodePattern.IgnoreFileForNow")
-					override fun applyFix(p: Project, d: ProblemDescriptor) { ignoredFiles.add(file.virtualFile.path) }
-				}
-
 				val affectedRanges = getAffectedRanges(file, beginPattern, endPattern)
 
 				if (affectedRanges.isEmpty()) {
@@ -57,8 +50,11 @@ class InspectionImpl: AbstractBaseJavaLocalInspectionTool() {
 						holder.registerProblem(ProblemDescriptorBase(
 							file,
 							file,
-							_errorText,
-							arrayOf(ignoreTempFix),
+							getMessage("inspection.generatedCodePattern.name"),
+							arrayOf(object: LocalQuickFix {
+								override fun getFamilyName() = getMessage("inspection.generatedCodePattern.IgnoreFileForNow")
+								override fun applyFix(p: Project, d: ProblemDescriptor) { ignoredFiles.add(file.virtualFile.path) }
+							}),
 							ERROR,
 							false,
 							changedRange,
