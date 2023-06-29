@@ -51,6 +51,10 @@ The plugin can be told to ignore the currently marked file by using the Quick Fi
 ]]></description>
 	<change-notes><![CDATA[
 <h3>New Features</h3>
+<h2>1.2.5</h2>
+<ul>
+	<li>added separate global and project-specific settings</li>
+</ul>
 <h2>1.2.4</h2>
 <ul>
 	<li>improved explanation in plugin description</li>
