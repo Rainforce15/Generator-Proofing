@@ -1,21 +1,28 @@
 package com.aeolid.generatorproofing
 
 import com.intellij.codeInspection.InspectionProfileEntry
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.ui.DocumentAdapter
+import org.intellij.lang.annotations.Language
 import java.text.ParseException
 import javax.swing.JTextField
 import javax.swing.event.DocumentEvent
 
-class SingleTextField(private val owner: InspectionProfileEntry, private val property: String, hint: String): JTextField() {
+class TextField(
+	private val owner: InspectionProfileEntry,
+	@Language("jvm-field-name") private val field: String,
+	private val name: String,
+	hint: String
+): JTextField() {
 
 	init {
 		text = getPropertyValue()
-		val instance = this
 		toolTipText = hint
+
 		document.addDocumentListener(object : DocumentAdapter() {
 			public override fun textChanged(e: DocumentEvent) {
 				try {
-					setPropertyValue(instance.text)
+					setPropertyValue(this@TextField.text)
 				} catch (e1: ParseException) {
 					// No luck this time
 				}
@@ -25,7 +32,8 @@ class SingleTextField(private val owner: InspectionProfileEntry, private val pro
 
 	private fun setPropertyValue(value: String) {
 		try {
-			owner.javaClass.getField(property)[owner] = value
+			owner.javaClass.getField(field)[owner] = value
+			PropertiesComponent.getInstance().setValue(name, value)
 		} catch (e: Exception) {
 			// OK
 		}
@@ -33,7 +41,7 @@ class SingleTextField(private val owner: InspectionProfileEntry, private val pro
 
 	private fun getPropertyValue(): String {
 		return try {
-			owner.javaClass.getField(property)[owner] as String
+			PropertiesComponent.getInstance().getValue(name, "")
 		} catch (e: Exception) {
 			"Loading error"
 		}
