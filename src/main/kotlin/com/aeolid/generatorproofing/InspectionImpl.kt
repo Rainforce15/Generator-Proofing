@@ -45,13 +45,13 @@ class InspectionImpl : AbstractBaseJavaLocalInspectionTool() {
 		return panel
 	}
 
-	fun areNotBlank(header: String, begin: String, end: String) = header.isNotBlank() && begin.isNotBlank() && end.isNotBlank()
-
 	override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean) = object: JavaElementVisitor() {
 		override fun visitJavaFile(file: PsiJavaFile) {
 			val firstChild = file.firstChild
 			if (
-				areNotBlank(headerPattern, beginPattern, endPattern) &&
+				headerPattern.isNotBlank() &&
+				beginPattern.isNotBlank() &&
+				endPattern.isNotBlank() &&
 				firstChild is PsiComment &&
 				firstChild.text.contains(headerPattern)
 			) {
