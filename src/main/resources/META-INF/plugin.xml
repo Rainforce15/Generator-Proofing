@@ -53,7 +53,7 @@ The plugin can be told to ignore the currently marked file by using the Quick Fi
 <h3>New Features</h3>
 <h2>1.2.5</h2>
 <ul>
-	<li>added separate global and project-specific settings</li>
+	<li>changed saving mechanism to permanent storage (requires reconfiguration)</li>
 </ul>
 <h2>1.2.4</h2>
 <ul>

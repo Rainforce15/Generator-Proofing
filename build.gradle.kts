@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.aeolid"
-version = "1.2.5"
+version = "1.2.5.1"
 
 repositories {
 	mavenCentral()

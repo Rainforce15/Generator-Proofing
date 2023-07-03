@@ -12,15 +12,8 @@ class TextField(
 	private val owner: InspectionProfileEntry,
 	@Language("jvm-field-name") private val field: String,
 	private val name: String,
-	private val hint: String?,
-	private val properties: PropertiesComponent
+	hint: String
 ): JTextField() {
-	constructor(
-		owner: InspectionProfileEntry,
-		@Language("jvm-field-name") field: String,
-		name: String,
-		properties: PropertiesComponent
-	): this(owner, field, name, null, properties)
 
 	init {
 		text = getPropertyValue()
@@ -40,7 +33,7 @@ class TextField(
 	private fun setPropertyValue(value: String) {
 		try {
 			owner.javaClass.getField(field)[owner] = value
-			properties.setValue(name, value)
+			PropertiesComponent.getInstance().setValue(name, value)
 		} catch (e: Exception) {
 			// OK
 		}
@@ -48,7 +41,7 @@ class TextField(
 
 	private fun getPropertyValue(): String {
 		return try {
-			properties.getValue(name, "")
+			PropertiesComponent.getInstance().getValue(name, "")
 		} catch (e: Exception) {
 			"Loading error"
 		}
