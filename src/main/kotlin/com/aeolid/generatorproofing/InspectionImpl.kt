@@ -6,17 +6,28 @@ import com.intellij.codeInspection.ProblemHighlightType.ERROR
 import com.intellij.codeInspection.options.OptPane
 import com.intellij.codeInspection.options.OptString
 import com.intellij.codeInspection.options.PlainMessage
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.HtmlChunk
 import com.intellij.psi.*
 import org.intellij.lang.annotations.Language
 
 class InspectionImpl: AbstractBaseJavaLocalInspectionTool() {
-	var headerPattern = ""
-	var beginPattern = ""
-	var endPattern = ""
+
+	private val headerPatternKey = "com.aeolid.generatorproofing.headerPattern"
+	private val beginPatternKey = "com.aeolid.generatorproofing.beginPattern"
+	private val endPatternKey = "com.aeolid.generatorproofing.endPattern"
 
 	val ignoredFiles = HashSet<String>()
+
+	private val globalProperties: PropertiesComponent = PropertiesComponent.getInstance()
+
+	var headerPattern = globalProperties.getValue(headerPatternKey, "")
+		set(value) { globalProperties.setValue(headerPatternKey, value); field = value }
+	var beginPattern = globalProperties.getValue(beginPatternKey, "")
+		set(value) { globalProperties.setValue(beginPatternKey, value); field = value }
+	var endPattern = globalProperties.getValue(endPatternKey, "")
+		set(value) { field = value; globalProperties.setValue(endPatternKey, field) }
 
 	override fun runForWholeFile() = true
 
