@@ -13,6 +13,7 @@ import org.intellij.lang.annotations.Language
 class InspectionImpl: AbstractBaseJavaLocalInspectionTool() {
 
 	val ignoredFiles = HashSet<String>()
+	val ignoredFolders = HashMap<String, HashSet<String>>()
 
 	var headerPattern = ""
 	var beginPattern = ""
@@ -41,6 +42,11 @@ class InspectionImpl: AbstractBaseJavaLocalInspectionTool() {
 			override fun getName(): String = getMessage("inspection.generatedCodePattern.ignoreFile")
 			override fun getFamilyName() = getMessage("inspection.generatedCodePattern.ignoreForNow")
 			override fun applyFix(p: Project, d: ProblemDescriptor) { ignoredFiles.add(file.virtualFile.path) }
+		},
+		object: LocalQuickFix {
+			override fun getName(): String = getMessage("inspection.generatedCodePattern.ignoreFolder")
+			override fun getFamilyName() = getMessage("inspection.generatedCodePattern.ignoreForNow")
+			override fun applyFix(p: Project, d: ProblemDescriptor) { ignoredFolders.getOrPut(file.virtualFile.parent.path) { HashSet() }.add(file.virtualFile.path) }
 		}
 	)
 
@@ -72,32 +78,38 @@ class InspectionImpl: AbstractBaseJavaLocalInspectionTool() {
 
 	private fun fixIgnored(file: PsiJavaFile, fileHasChanges: Boolean) {
 		val vFile = file.virtualFile.path
+		val vParent = file.virtualFile.parent.path
 
 		if (!fileHasChanges) {
 			ignoredFiles.remove(vFile)
+			ignoredFolders[vParent]?.remove(vFile)
+			if(ignoredFolders[vParent]?.isEmpty() == true) {
+				ignoredFolders.remove(vParent)
+			}
+		} else if (ignoredFolders.contains(vParent)) {
+			ignoredFolders[vParent]?.add(vFile)
 		}
 	}
 
-	private fun isIgnored(file: PsiJavaFile) = ignoredFiles.contains(file.virtualFile.path)
+	private fun isIgnored(file: PsiJavaFile) =
+		ignoredFiles.contains(file.virtualFile.path) || ignoredFolders.keys.any { file.virtualFile.parent.path.startsWith(it) }
 
 	private fun checkFileForRanges(holder: ProblemsHolder, file: PsiJavaFile, affectedRanges: List<TextRange>) {
 		fixIgnored(file, affectedRanges.isNotEmpty())
 
 		if(!isIgnored(file)) {
 			for (changedRange in affectedRanges) {
-				holder.registerProblem(
-					ProblemDescriptorBase(
-						file,
-						file,
-						getMessage("inspection.generatedCodePattern.name"),
-						getQuickFixes(file),
-						ERROR,
-						false,
-						changedRange,
-						true,
-						false
-					)
-				)
+				holder.registerProblem(ProblemDescriptorBase(
+					file,
+					file,
+					getMessage("inspection.generatedCodePattern.name"),
+					getQuickFixes(file),
+					ERROR,
+					false,
+					changedRange,
+					true,
+					false
+				))
 			}
 		}
 	}
