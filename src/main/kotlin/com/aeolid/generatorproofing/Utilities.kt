@@ -59,7 +59,11 @@ fun getRevisionedContentFrom(change: Change): String? {
 	}
 }
 
-fun getOutsideRanges(text: String, startPattern: String, endPattern: String): List<TextRange> {
+fun getOutsideRanges(text: String, startPattern: String?, endPattern: String?): List<TextRange> {
+	if (startPattern == null || endPattern == null) {
+		return listOf(TextRange(0, text.length - 1))
+	}
+
 	val ranges = ArrayList<TextRange>()
 	var prevSearchEnd = 0
 	var prevLineEnd = 0
@@ -113,7 +117,7 @@ fun getRelevantRanges(outsideUserSection: List<TextRange>, changes: List<TextRan
 	return relevantRanges
 }
 
-fun getAffectedRanges(file: PsiFile, startPattern: String, endPattern: String): List<TextRange> {
+fun getAffectedRanges(file: PsiFile, startPattern: String?, endPattern: String?): List<TextRange> {
 	val project = file.project
 	val change = ChangeListManager.getInstance(project).getChange(file.virtualFile)
 	val contentFromVcs = if (change != null) getRevisionedContentFrom(change) else null
