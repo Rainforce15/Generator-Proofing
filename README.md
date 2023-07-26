@@ -12,7 +12,7 @@ error.
 
 ### Basic configuration
 
-The plugin is intended for generated code that is marked with a header comment and contains implementation begin and end tags:
+The plugin is intended for code produced by a "skeleton" generator which contains method signatures while leaving the body of the methods free for implementation.These files are marked by a comment at the very start, with implementation segments that are marked by a begin and end tag:
 
 ```java
 // Generated file
