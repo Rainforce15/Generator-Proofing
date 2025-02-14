@@ -4,32 +4,12 @@ package com.aeolid.generatorproofing
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtilRt
-import com.intellij.openapi.vcs.VcsException
 import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.changes.ChangeListManager
 import com.intellij.openapi.vcs.ex.Range
 import com.intellij.openapi.vcs.ex.createRanges
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
-
-fun getRanges(docText: CharSequence, contentFromVcs: CharSequence): List<Range> =
-	createRanges(docText, StringUtilRt.convertLineSeparators(contentFromVcs, "\n"))
-
-fun getChangedTextRanges(
-	gotRanges: List<Range>,
-	change: Change?,
-	file: PsiFile,
-	document: Document,
-	contentFromVcs: String?
-): List<TextRange> {
-	return if (change != null && change.type == Change.Type.NEW) {
-		listOf(file.textRange)
-	} else if (contentFromVcs != null) {
-		getChangedTextRanges(document, gotRanges)
-	} else {
-		emptyList()
-	}
-}
 
 fun getChangedTextRanges(document: Document, changedRanges: List<Range>): List<TextRange> {
 	val ranges = ArrayList<TextRange>()
@@ -49,18 +29,8 @@ fun getChangedTextRanges(document: Document, changedRanges: List<Range>): List<T
 	return ranges
 }
 
-fun getRevisionedContentFrom(change: Change): String? {
-	val revision = change.beforeRevision ?: return null
-
-	return try {
-		revision.content
-	} catch (e: VcsException) {
-		null
-	}
-}
-
-fun getOutsideRanges(text: String, startPattern: String?, endPattern: String?): List<TextRange> {
-	if (startPattern == null || endPattern == null) {
+fun getOutsideRanges(text: String, startPattern: String, endPattern: String): List<TextRange> {
+	if (startPattern == "" || endPattern == "") {
 		return listOf(TextRange(0, text.length - 1))
 	}
 
@@ -117,20 +87,25 @@ fun getRelevantRanges(outsideUserSection: List<TextRange>, changes: List<TextRan
 	return relevantRanges
 }
 
-fun getAffectedRanges(file: PsiFile, startPattern: String?, endPattern: String?): List<TextRange> {
+fun getAffectedRanges(file: PsiFile, startPattern: String, endPattern: String): List<TextRange> {
 	val project = file.project
 	val change = ChangeListManager.getInstance(project).getChange(file.virtualFile)
-	val contentFromVcs = if (change != null) getRevisionedContentFrom(change) else null
 	val document = PsiDocumentManager.getInstance(project).getDocument(file)
 
-	return if (document != null) {
+	return if (document != null && change != null) {
 		val docText = document.charsSequence.toString()
-		val changedLines = if (contentFromVcs != null) getRanges(docText, contentFromVcs) else emptyList()
 
-		getRelevantRanges(
-			getOutsideRanges(docText, startPattern, endPattern),
-			getChangedTextRanges(changedLines, change, file, document, contentFromVcs)
-		)
+		if (change.type == Change.Type.NEW) {
+			getRelevantRanges(getOutsideRanges(docText, startPattern, endPattern), listOf(file.textRange))
+		} else {
+			val contentFromVcs = change.beforeRevision?.content ?: ""
+			val changedLines = createRanges(docText, StringUtilRt.convertLineSeparators(contentFromVcs, "\n"))
+
+			getRelevantRanges(
+				getOutsideRanges(docText, startPattern, endPattern),
+				getChangedTextRanges(document, changedLines)
+			)
+		}
 	} else {
 		emptyList()
 	}

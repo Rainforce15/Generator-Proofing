@@ -1,33 +1,34 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
-	id("java")
-	id("org.jetbrains.kotlin.jvm") version "1.8.21"
+	kotlin("jvm") version "2.1.10"
 	id("org.jetbrains.intellij") version "1.13.3"
 }
 
 group = "com.aeolid"
-version = "1.3.6"
+version = "1.4.0"
 
 repositories {
 	mavenCentral()
 }
 
-// Configure Gradle IntelliJ Plugin
-// Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
 	version.set("2023.1")
-	type.set("IC") // Target IDE Platform
-
+	type.set("IC")
 	plugins.set(listOf("com.intellij.java"))
 }
 
 tasks {
-	// Set the JVM compatibility versions
 	withType<JavaCompile> {
-		sourceCompatibility = "17"
-		targetCompatibility = "17"
+		sourceCompatibility = JvmTarget.JVM_17.target
+		targetCompatibility = JvmTarget.JVM_17.target
 	}
-	withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-		kotlinOptions.jvmTarget = "17"
+
+	withType<KotlinCompile> {
+		compilerOptions {
+			jvmTarget.set(JvmTarget.JVM_17)
+		}
 	}
 
 	patchPluginXml {
