@@ -50,6 +50,14 @@ Substrings are acceptable e.g. header pattern &nbsp;&nbsp;<b><code>* Generated F
 The plugin can be told to ignore the currently marked file by using the Quick Fix feature (either by pressing <b>Alt+Enter</b> or clicking the light bulb icon) and selecting <b>Ignore file until restart/changes have been rolled back...</b>. This will stop the inspection from marking any current changes to the file as errors until the IDE is restarted or all changes have been reverted.
 ]]></description>
 	<change-notes><![CDATA[
+<h2>1.4.2</h2>
+<ul>
+	<li>Fixed crashes around quick copy-pasting</li>
+</ul>
+<h2>1.4.1</h2>
+<ul>
+	<li>Updated to 2025.1</li>
+</ul>
 <h2>1.4.0</h2>
 <ul>
 	<li>added option to check for a pattern in the header to see if the file has been regenerated</li>

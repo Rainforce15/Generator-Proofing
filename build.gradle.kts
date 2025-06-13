@@ -7,14 +7,14 @@ plugins {
 }
 
 group = "com.aeolid"
-version = "1.4.0"
+version = "1.4.2"
 
 repositories {
 	mavenCentral()
 }
 
 intellij {
-	version.set("2023.1")
+	version.set("2025.1")
 	type.set("IC")
 	plugins.set(listOf("com.intellij.java"))
 }
@@ -33,8 +33,8 @@ tasks {
 
 	patchPluginXml {
 		version.set("${project.version}")
-		sinceBuild.set("231")
-		untilBuild.set("243.*")
+		sinceBuild.set("251")
+		untilBuild.set("273.*")
 	}
 
 	signPlugin {

@@ -108,10 +108,9 @@ class InspectionImpl: AbstractBaseJavaLocalInspectionTool() {
 
 	private fun checkFileForJaxb(holder: ProblemsHolder, file: PsiJavaFile) {
 		if (checkJaxb) {
-			val firstChild = file.children[0]
-			val secondChild = file.children[2]
+			val children = file.children
 
-			if (commentContainsText(firstChild, jaxbPattern) || commentContainsText(secondChild, jaxbPattern)) {
+			if (commentContainsText(children[0], jaxbPattern) || children.size > 1 && commentContainsText(children[2], jaxbPattern)) {
 				val affectedRanges = getAffectedRanges(file, "", "")
 				checkFileForRanges(holder, file, affectedRanges)
 			}

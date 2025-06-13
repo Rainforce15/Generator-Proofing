@@ -88,25 +88,36 @@ fun getRelevantRanges(outsideUserSection: List<TextRange>, changes: List<TextRan
 }
 
 fun getAffectedRanges(file: PsiFile, startPattern: String, endPattern: String): List<TextRange> {
-	val project = file.project
-	val change = ChangeListManager.getInstance(project).getChange(file.virtualFile)
-	val document = PsiDocumentManager.getInstance(project).getDocument(file)
+	var success = false
+	var ranges: List<TextRange> = emptyList()
 
-	return if (document != null && change != null) {
-		val docText = document.charsSequence.toString()
+	while (!success) {
+		try {
+			val project = file.project
+			val change = ChangeListManager.getInstance(project).getChange(file.virtualFile)
+			val document = PsiDocumentManager.getInstance(project).getDocument(file)
 
-		if (change.type == Change.Type.NEW) {
-			getRelevantRanges(getOutsideRanges(docText, startPattern, endPattern), listOf(file.textRange))
-		} else {
-			val contentFromVcs = change.beforeRevision?.content ?: ""
-			val changedLines = createRanges(docText, StringUtilRt.convertLineSeparators(contentFromVcs, "\n"))
+			if (document != null && change != null) {
+				val docText = document.charsSequence.toString()
 
-			getRelevantRanges(
-				getOutsideRanges(docText, startPattern, endPattern),
-				getChangedTextRanges(document, changedLines)
-			)
+				if (change.type == Change.Type.NEW) {
+					ranges =
+						getRelevantRanges(getOutsideRanges(docText, startPattern, endPattern), listOf(file.textRange))
+				} else {
+					val contentFromVcs = change.beforeRevision?.content ?: ""
+					val changedLines = createRanges(docText, StringUtilRt.convertLineSeparators(contentFromVcs, "\n"))
+
+					ranges = getRelevantRanges(
+						getOutsideRanges(docText, startPattern, endPattern),
+						getChangedTextRanges(document, changedLines)
+					)
+				}
+			}
+
+			success = true
+		} catch (e: IndexOutOfBoundsException) {
+			/* try again */
 		}
-	} else {
-		emptyList()
 	}
+	return ranges
 }
